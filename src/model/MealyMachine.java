@@ -10,11 +10,13 @@ public class MealyMachine {
 	private ArrayList<State> allStates;
 	
 	private ArrayList<String> inputAlphabet;//falta llenarlo
-	private ArrayList<String> outputAlphabet;//falta llenarlo
 	
 	public MealyMachine(String first) {
 		firstState = first;
 		allStates = new ArrayList<State>();
+		inputAlphabet = new ArrayList<>();
+		inputAlphabet.add("1");
+		inputAlphabet.add("0");
 	}
 	
 	/**
@@ -55,7 +57,7 @@ public class MealyMachine {
 			State currentState = queue.poll();
 			ArrayList<Transition> transitions = currentState.listTransition;
 			for(Transition transition : transitions) {
-				State transitionState = findState(transition.name);
+				State transitionState = findState(transition.target);
 				if(!visited.contains(transitionState)) {
 					queue.add(transitionState);
 					visited.add(transitionState);
@@ -79,9 +81,20 @@ public class MealyMachine {
 	private  ArrayList<ArrayList<State>> generateFirstPartition(){
 		ArrayList<ArrayList<State>> firstPartition = new ArrayList<ArrayList<State>>();
 		ArrayList<State> visited = new ArrayList<>();
-		for(String inputSymbol : inputAlphabet) {
+		
+		while(visited.size()<allStates.size()) {
 			ArrayList<State> group = (ArrayList<State>) allStates.clone();
-			
+			group.removeAll(visited);
+			State first = group.get(0);
+			for(String inputSymbol : inputAlphabet) {
+				for(State currentState : group) {
+					if(!valueOfTransition(first,inputSymbol).equals(valueOfTransition(currentState,inputSymbol))) {
+						group.remove(currentState);
+					}
+				}
+			}
+			firstPartition.add(group);
+			visited.addAll(group);
 		}
 		return firstPartition;
 	}
@@ -215,16 +228,16 @@ public class MealyMachine {
 		}
 		return result;
 	}
-	
-	/**
-	 * <h2>delateState
-	 * <p> this method find and delete a state.
-	 * @param state : is the name of the transition to be deleted.
-	 */
-	private void delateState(String nameState) {
-		State state = findState(nameState);
-		allStates.remove(state);
-	}
+//	
+//	/**
+//	 * <h2>delateState
+//	 * <p> this method find and delete a state.
+//	 * @param state : is the name of the transition to be deleted.
+//	 */
+//	private void delateState(String nameState) {
+//		State state = findState(nameState);
+//		allStates.remove(state);
+//	}
 	
 	/**
 	 * <h2>findState
@@ -243,16 +256,23 @@ public class MealyMachine {
 		return returnState;
 	}
 	
- 	class State{
+	public ArrayList<State> getAllStates(){
+		return allStates;
+	}
+ 	public class State{
 		String name;
 		ArrayList<Transition> listTransition;
 		public State(String name) {
 			this.name = name;
 			listTransition = new ArrayList<>();
 		}
+		
+		public String getName() {
+			return name;
+		}
 	}
  	
-	class Transition{
+	public class Transition{
 		String name;
 		String target;
 		String output;
