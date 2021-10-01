@@ -1,11 +1,16 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class MealyMachine {
 	
 	private String firstState;
 	private ArrayList<State> allStates;
+	
+	private ArrayList<String> inputAlphabet;//falta llenarlo
+	private ArrayList<String> outputAlphabet;//falta llenarlo
 	
 	public MealyMachine(String first) {
 		firstState = first;
@@ -19,7 +24,8 @@ public class MealyMachine {
 	 * 
 	 */
 	public void addState(String name) {
-		
+		State newState = new State(name);
+		allStates.add(newState);
 	}
 	/**
 	 * <h2>addTransition
@@ -30,7 +36,9 @@ public class MealyMachine {
 	 * @param output : is the output of the transition.
 	 */
 	public void addTransition(String source,String name, String target, String output) {
-		
+		State state = findState(source);
+		Transition transition = new Transition(name,target,output);
+		state.listTransition.add(transition);
 	}
 	/**
 	 *<h2>generateConnectedGraph
@@ -38,7 +46,28 @@ public class MealyMachine {
 	 *deleting all the states that are not accessible from the initial state.
 	 */
 	private void generateConnectedGraph() {
+		Queue<State> queue = new LinkedList<State>();
+		ArrayList<State> visited = new ArrayList<>();
+		State firstState =  findState(this.firstState);
+		queue.add(firstState);
+		visited.add(firstState);
+		while(!queue.isEmpty()) {
+			State currentState = queue.poll();
+			ArrayList<Transition> transitions = currentState.listTransition;
+			for(Transition transition : transitions) {
+				State transitionState = findState(transition.name);
+				if(!visited.contains(transitionState)) {
+					queue.add(transitionState);
+					visited.add(transitionState);
+				}
+			}
+		}
 		
+		for(State state : allStates) {
+			if(!visited.contains(state)) {
+				allStates.remove(state);
+			}
+		}
 	}
 	
 	/**
@@ -47,8 +76,14 @@ public class MealyMachine {
 	 * Grouping the states that produce identical outputs for each input symbol.
 	 * @return return a  matrix where each row is a group of states's name.
 	 */
-	private  String[][] generateFirstPartition(){
-		return null;
+	private  ArrayList<ArrayList<State>> generateFirstPartition(){
+		ArrayList<ArrayList<State>> firstPartition = new ArrayList<ArrayList<State>>();
+		ArrayList<State> visited = new ArrayList<>();
+		for(String inputSymbol : inputAlphabet) {
+			ArrayList<State> group = (ArrayList<State>) allStates.clone();
+			
+		}
+		return firstPartition;
 	}
 	
 	/**
@@ -61,8 +96,46 @@ public class MealyMachine {
 	 * @param currentPartition : is the partition incoming to generated the next partition of this.
 	 * @return generate the last and minimum partition possible.
 	 */
-	private String[][] generateNextPartition(String[][] currentPartition){
-		return null;
+	private ArrayList<ArrayList<State>> generateNextPartition(ArrayList<ArrayList<State>> currentPartition){
+		ArrayList<ArrayList<State>> nextPartition = new ArrayList<ArrayList<State>>();
+		ArrayList<State> visited = new ArrayList<>();
+		for(ArrayList<State> currentGroup : currentPartition) {
+			for(int i = 0;i<currentGroup.size();i++) {
+				State first = currentGroup.get(i);
+				if(!visited.contains(first)) {
+					ArrayList<State> newGroup = new ArrayList<>();
+					for(int j = i;j<currentGroup.size();j++) {
+						State second = currentGroup.get(i);
+						boolean equals = true;
+						if(!visited.contains(second)) {
+							for(String inputSymbol : inputAlphabet) {
+								State nextFirst = findNextState(first, inputSymbol);
+								State nextSecond = findNextState(second, inputSymbol);
+								if(!nextFirst.equals(nextSecond)) {
+									equals = false;
+									break;
+								}
+							}
+							if(equals) {
+								visited.add(second);
+								newGroup.add(second);
+							}
+						}
+					}
+					nextPartition.add(visited);
+				}
+			}
+		}
+		boolean contains = true;
+		for(int i = 0; i<currentPartition.size() && contains;i++) {
+			if(!nextPartition.get(i).containsAll(currentPartition.get(i))) {
+				contains = false;
+			}
+		}
+		if(!contains) {
+			return generateNextPartition(nextPartition);
+		}
+		return nextPartition;
 	}
 	
 	/**
@@ -72,8 +145,29 @@ public class MealyMachine {
 	 * @param lastPartition : is the minimum partition generated.
 	 * @return this method return a Mealy machine with the new states and being the minimum automata equivalent.
 	 */
-	private MealyMachine renamePartition(String[][] lastPartition) {
-		return null;
+	private MealyMachine renamePartition(ArrayList<ArrayList<State>> lastPartition) {
+		MealyMachine minMealyMachine = null;
+		for(int i = 0;i<lastPartition.size();i++) {
+			String nameCurrentGroup = "Q"+i;
+			if(i==0) {
+				minMealyMachine = new MealyMachine(nameCurrentGroup);
+			}
+			State currentState = lastPartition.get(i).get(0);
+			minMealyMachine.addState(nameCurrentGroup);
+			ArrayList<Transition> listTransition = currentState.listTransition;
+			for(Transition transition : listTransition) {
+				String nameTargetGroup = null;
+				String output = transition.output;
+				String name = transition.name;
+				for(int j = 0;j<lastPartition.size() && nameTargetGroup==null;j++) {
+					if(lastPartition.get(j).contains(findState(transition.target))) {
+						nameTargetGroup = "Q"+j;
+					}
+				}
+				minMealyMachine.addTransition(nameCurrentGroup,name,nameTargetGroup,output);
+			}
+		}
+		return minMealyMachine;
 	}
 	
 	/**
@@ -83,7 +177,7 @@ public class MealyMachine {
 	 */
 	public MealyMachine generateAutomataEquivalent() {
 		generateConnectedGraph();
-		String[][] partition = generateFirstPartition();
+		ArrayList<ArrayList<State>> partition = generateFirstPartition();
 		partition = generateNextPartition(partition);
 		return renamePartition(partition);
 	}
@@ -95,9 +189,14 @@ public class MealyMachine {
 	 * @param Transition : is the symbol of the transition
 	 * @return this method return the destination state.
 	 */
-	private State findNextState(State source, String Transition) {
-		
-		return null;
+	private State findNextState(State source, String symbolTransition) {
+		State result = null;
+		for(Transition transition : source.listTransition) {
+			if(transition.name.equals(symbolTransition)) {
+				result = findState(transition.target);
+			}
+		}
+		return result;
 	}
 	
 	/**
@@ -107,8 +206,14 @@ public class MealyMachine {
 	 * @param Transition : is the symbol of the transition
 	 * @return this method return the output of a transition.
 	 */
-	private String valueOfTransition(State source, String Transition) {
-		return null;
+	private String valueOfTransition(State source, String symbolTransition) {
+		String result = null;
+		for(Transition transition : source.listTransition) {
+			if(transition.name.equals(symbolTransition)) {
+				result = transition.output;
+			}
+		}
+		return result;
 	}
 	
 	/**
@@ -116,18 +221,45 @@ public class MealyMachine {
 	 * <p> this method find and delete a state.
 	 * @param state : is the name of the transition to be deleted.
 	 */
-	private void delateState(String state) {
-		
+	private void delateState(String nameState) {
+		State state = findState(nameState);
+		allStates.remove(state);
+	}
+	
+	/**
+	 * <h2>findState
+	 * <p>this method is use to find the state using his name.
+	 * @param nameState : is the name of the state.
+	 * @return the state sought.
+	 */
+	private State findState(String nameState) {
+		State returnState = null;
+		for(State state : allStates) {
+			if(state.name.equals(nameState)) {
+				returnState = state;
+				break;
+			}
+		}
+		return returnState;
 	}
 	
  	class State{
 		String name;
 		ArrayList<Transition> listTransition;
+		public State(String name) {
+			this.name = name;
+			listTransition = new ArrayList<>();
+		}
 	}
  	
 	class Transition{
 		String name;
 		String target;
 		String output;
+		public Transition(String name,String target, String output) {
+			this.name = name;
+			this.target = target;
+			this.output = output;
+		}
 	}
 }
