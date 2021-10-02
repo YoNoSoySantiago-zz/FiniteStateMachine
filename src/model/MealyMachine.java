@@ -87,11 +87,13 @@ public class MealyMachine {
 			group.removeAll(visited);
 			State first = group.get(0);
 			for(String inputSymbol : inputAlphabet) {
+				ArrayList<State> toRemove = new ArrayList<>();
 				for(State currentState : group) {
 					if(!valueOfTransition(first,inputSymbol).equals(valueOfTransition(currentState,inputSymbol))) {
-						group.remove(currentState);
+						toRemove.add(currentState);
 					}
 				}
+				group.removeAll(toRemove);
 			}
 			firstPartition.add(group);
 			visited.addAll(group);
@@ -118,13 +120,13 @@ public class MealyMachine {
 				if(!visited.contains(first)) {
 					ArrayList<State> newGroup = new ArrayList<>();
 					for(int j = i;j<currentGroup.size();j++) {
-						State second = currentGroup.get(i);
+						State second = currentGroup.get(j);
 						boolean equals = true;
 						if(!visited.contains(second)) {
 							for(String inputSymbol : inputAlphabet) {
 								State nextFirst = findNextState(first, inputSymbol);
 								State nextSecond = findNextState(second, inputSymbol);
-								if(!nextFirst.equals(nextSecond)) {
+								if((nextFirst!=null && nextSecond!=null)&&(findSuccesor(currentPartition, first)!=findSuccesor(currentPartition, second))) {
 									equals = false;
 									break;
 								}
@@ -135,7 +137,9 @@ public class MealyMachine {
 							}
 						}
 					}
-					nextPartition.add(visited);
+					if(!newGroup.isEmpty()) {
+						nextPartition.add(newGroup);
+					}
 				}
 			}
 		}
@@ -151,6 +155,17 @@ public class MealyMachine {
 		return nextPartition;
 	}
 	
+	
+	private ArrayList<State> findSuccesor(ArrayList<ArrayList<State>> partition,  State state){
+		ArrayList<State> result = null;
+		for(ArrayList<State> group : partition) {
+			if(group.contains(state)) {
+				result = group;
+				break;
+			}
+		}
+		return result;
+	}
 	/**
 	 * <h2>renamePartition
 	 * <p>using a partition generated, this method assigns a new name to each group of the partition.
@@ -256,6 +271,23 @@ public class MealyMachine {
 		return returnState;
 	}
 	
+	@Override
+	public String toString() {
+		String result = "";
+//		for(String input : inputAlphabet) {
+//			result+=input+"		";
+//		}
+//		result+="\n";
+		for(State state : allStates) {
+			result+=state.name + "	";
+			ArrayList<Transition> transitions = state.listTransition;
+			for(Transition transition : transitions) {
+				result+=transition.name+"/"+transition.target+"	";
+			}
+			result+="\n";
+		}
+		return result;
+	}
 	public ArrayList<State> getAllStates(){
 		return allStates;
 	}
