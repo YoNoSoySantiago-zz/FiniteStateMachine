@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import model.MooreMachine.State;
+
 public class MealyMachine {
 	
 	private String firstState;
@@ -126,7 +128,9 @@ public class MealyMachine {
 							for(String inputSymbol : inputAlphabet) {
 								State nextFirst = findNextState(first, inputSymbol);
 								State nextSecond = findNextState(second, inputSymbol);
-								if((nextFirst!=null && nextSecond!=null)&&(findSuccesor(currentPartition, first)!=findSuccesor(currentPartition, second))) {
+								ArrayList<State> firstGroup = findSuccesor(currentPartition, nextFirst);
+								ArrayList<State> secondGroup = findSuccesor(currentPartition, nextSecond);
+								if((nextFirst!=null && nextSecond!=null)&&(firstGroup!=secondGroup)) {
 									equals = false;
 									break;
 								}

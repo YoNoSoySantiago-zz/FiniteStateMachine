@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import model.MealyMachine.State;
+import model.MealyMachine.Transition;
+
 public class MooreMachine {
 	
 	private String firstState;
@@ -13,6 +16,13 @@ public class MooreMachine {
 	
 	public MooreMachine(String first) {
 		firstState = first;
+		allStates = new ArrayList<>();
+		inputAlphabet = new ArrayList<>();
+		inputAlphabet.add("0");
+		inputAlphabet.add("1");
+		outputAlphabet = new ArrayList<>();
+		outputAlphabet.add("0");
+		outputAlphabet.add("1");
 	}
 	
 	/**
@@ -57,7 +67,7 @@ public class MooreMachine {
 			State currentState = queue.poll();
 			ArrayList<Transition> transitions = currentState.listTransition;
 			for(Transition transition : transitions) {
-				State transitionState = findState(transition.name);
+				State transitionState = findState(transition.target);
 				if(!visited.contains(transitionState)) {
 					queue.add(transitionState);
 					visited.add(transitionState);
@@ -113,13 +123,15 @@ public class MooreMachine {
 				if(!visited.contains(first)) {
 					ArrayList<State> newGroup = new ArrayList<>();
 					for(int j = i;j<currentGroup.size();j++) {
-						State second = currentGroup.get(i);
+						State second = currentGroup.get(j);
 						boolean equals = true;
 						if(!visited.contains(second)) {
 							for(String inputSymbol : inputAlphabet) {
 								State nextFirst = findNextState(first, inputSymbol);
 								State nextSecond = findNextState(second, inputSymbol);
-								if(!nextFirst.equals(nextSecond)) {
+								ArrayList<State> firstGroup = findSuccesor(currentPartition, nextFirst);
+								ArrayList<State> secondGroup = findSuccesor(currentPartition, nextSecond);
+								if((nextFirst!=null && nextSecond!=null)&&(firstGroup!=secondGroup)) {
 									equals = false;
 									break;
 								}
@@ -130,7 +142,9 @@ public class MooreMachine {
 							}
 						}
 					}
-					nextPartition.add(visited);
+					if(!newGroup.isEmpty()) {
+						nextPartition.add(newGroup);
+					}
 				}
 			}
 		}
@@ -144,6 +158,17 @@ public class MooreMachine {
 			return generateNextPartition(nextPartition);
 		}
 		return nextPartition;
+	}
+	
+	private ArrayList<State> findSuccesor(ArrayList<ArrayList<State>> partition,  State state){
+		ArrayList<State> result = null;
+		for(ArrayList<State> group : partition) {
+			if(group.contains(state)) {
+				result = group;
+				break;
+			}
+		}
+		return result;
 	}
 	
 	/**
@@ -234,6 +259,24 @@ public class MooreMachine {
 //	private String valueOfState(String state) {
 //		return findState(state).output;
 //	}
+	@Override
+	public String toString() {
+		String result = "";
+//		for(String input : inputAlphabet) {
+//			result+=input+"		";
+//		}
+//		result+="\n";
+		for(State state : allStates) {
+			result+=state.name + "	";
+			ArrayList<Transition> transitions = state.listTransition;
+			for(Transition transition : transitions) {
+				result+=transition.name+"/"+transition.target+"	";
+			}
+			result+="\n";
+		}
+		return result;
+	}
+	
 	public class State{
 		String name;
 		String output;
