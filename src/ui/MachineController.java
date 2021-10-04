@@ -2,6 +2,7 @@ package ui;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -10,9 +11,12 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -23,18 +27,21 @@ public class MachineController {
     private AnchorPane mainAnchorPane;
 	
 	@FXML
-    private BorderPane mainBorderPane;
+	private BorderPane mainBorderPane;
 	private Stage stage;
 	private Character firstState;
-
+	@FXML
+	private TableView<String> equevalenceTable;
 	@FXML
 	private BorderPane basePane;
 	@FXML
-    private VBox vboxMoore;
+	private VBox vboxMoore;
 	private ArrayList<String> states;
 	private int cont;
 	private String[][] matrixMoore;
 	private String[][] matrixMealy;
+	boolean isMealy;
+	GridPane matrix = new GridPane();
 
 	
 	public MachineController(Stage s) throws IOException {
@@ -161,6 +168,7 @@ public class MachineController {
     @FXML
     void completeMachine(ActionEvent event) {
     	createMatrixMoore();
+    	loadSolution();
     }
     @SuppressWarnings("unchecked")
     public void createMatrixMoore() {
@@ -198,6 +206,7 @@ public class MachineController {
 			root = fxmload.load();
 			basePane.getChildren().clear();
 			basePane.setCenter(root);
+			isMealy=true;
 
 			
 		} catch (IOException e) {
@@ -236,8 +245,7 @@ public class MachineController {
     @SuppressWarnings("unchecked")
 	public void createMatrixMealy() {
     	String cadena="";
-    	System.out.println("fil"+ vboxMoore.getChildren().size());
-    	System.out.println(((HBox) vboxMoore.getChildren().get(0)).getChildren().size()-1);
+
     	matrixMealy = new String[vboxMoore.getChildren().size()][((HBox) vboxMoore.getChildren().get(0)).getChildren().size()-1];
     	for (int i = 1; i < vboxMoore.getChildren().size() ; i++) {
     		for (int j = 1; j < ((HBox) vboxMoore.getChildren().get(i)).getChildren().size(); j++) {
@@ -251,17 +259,46 @@ public class MachineController {
 			matrixMealy[s][0]=states.get(cont);
 			cont++;
 		}
-    	for(int i = 0; i < matrixMealy.length; i++){ 
-    		for(int j = 0; j < matrixMealy[i].length; j++){ 
-    			System.out.print(matrixMealy[i][j] + " ");
-    		} 
-    		System.out.println();
-    	} 
     }
     @FXML
     void completeMachineMealy(ActionEvent event) {
     	createMatrixMealy();
+    	loadSolution();
     }
 
-    
+    public void loadSolution(){
+		FXMLLoader fxmload = new FXMLLoader(getClass().getResource("Solution.fxml"));
+		fxmload.setController(this);
+		Parent root;
+		try {
+			root = fxmload.load();
+			basePane.getChildren().clear();
+			basePane.setCenter(root);
+			Label label=new Label("HOLA");
+	    	TextField f=new TextField();
+	    	matrix.add(f, 0, 0);
+	
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+    @FXML
+    void toc(ActionEvent event) {
+    	if(isMealy) {
+    		 loadTable(matrixMealy);
+    	}
+    	else {
+    		loadTable(matrixMoore);
+    	}
+    }
+    public void loadTable(String [][] m) {
+    	for (int i = 0;  i< m.length ; i++) {
+    		for (int j = 0; j < m[i].length; j++) {
+    			Label label = new Label(m[i][j]);
+    			matrix.add(label, i, j);
+    			matrix.setHgap(10);
+    	    	matrix.setVgap(10);
+    		}
+    	}
+    }
 }
