@@ -3,6 +3,7 @@ package test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
@@ -16,15 +17,26 @@ class MealyMachineTest {
 	void test1() {
 		setUp();
 		setUp2();
+		
+		String[][] matrix = mealyMachine.generateMatrix();
+		for(int i =0;i<matrix.length;i++) {
+			for(int j = 0;j<matrix[i].length;j++) {
+				System.out.print(matrix[i][j]+"	");
+			}
+			System.out.println();
+		}
 		MealyMachine otherMachine = mealyMachine.generateAutomataEquivalent();
-//		ArrayList<State> allStates = otherMachine.getAllStates();
-//		for(State state : allStates) {
-//			System.out.println(state.getName());
-//		}
-		System.out.println(mealyMachine.toString());
-		System.out.println("----------------------------------------------\n");
-		System.out.println(otherMachine.toString());
+		
+		System.out.println("\n----------------------------------------------\n");
+		matrix = otherMachine.generateMatrix();
+		for(int i =0;i<matrix.length;i++) {
+			for(int j = 0;j<matrix[i].length;j++) {
+				System.out.print(matrix[i][j]+"	");
+			}
+			System.out.println();
+		}
 	}
+	
 	void setUp() {
 		mealyMachine = new MealyMachine("A");
 		mealyMachine.addState("A");
@@ -33,6 +45,9 @@ class MealyMachineTest {
 		mealyMachine.addState("D");
 		mealyMachine.addState("E");
 		mealyMachine.addState("F");
+		
+		mealyMachine.addInputSymbol('0');
+		mealyMachine.addInputSymbol('1');
 	}
 	
 	void setUp2() {

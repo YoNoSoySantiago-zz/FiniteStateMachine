@@ -14,14 +14,46 @@ class MooreMachineTest {
 		setUp();
 		setUp2();
 		MooreMachine otherMachine = mooreMachine.generateAutomataEquivalent();
-//		ArrayList<State> allStates = otherMachine.getAllStates();
-//		for(State state : allStates) {
-//			System.out.println(state.getName());
-//		}
-		System.out.println(mooreMachine.toString());
-		System.out.println("----------------------------------------------\n");
-		System.out.println(otherMachine.toString());
+		String[][] matrix = mooreMachine.generateMatrix();
+		for(int i =0;i<matrix.length;i++) {
+			for(int j = 0;j<matrix[i].length;j++) {
+				System.out.print(matrix[i][j]+"	");
+			}
+			System.out.println();
+		}
+		System.out.println("\n----------------------------------------------\n");
+		matrix = otherMachine.generateMatrix();
+		for(int i =0;i<matrix.length;i++) {
+			for(int j = 0;j<matrix[i].length;j++) {
+				System.out.print(matrix[i][j]+"	");
+			}
+			System.out.println();
+		}
+		System.out.println("\n==============================================\n");
 	}
+	
+	@Test
+	void testWithOutTransitions() {
+		setUp();
+		MooreMachine otherMachine = mooreMachine.generateAutomataEquivalent();
+		String[][] matrix = mooreMachine.generateMatrix();
+		for(int i =0;i<matrix.length;i++) {
+			for(int j = 0;j<matrix[i].length;j++) {
+				System.out.print(matrix[i][j]+"	");
+			}
+			System.out.println();
+		}
+		System.out.println("\n----------------------------------------------\n");
+		matrix = otherMachine.generateMatrix();
+		for(int i =0;i<matrix.length;i++) {
+			for(int j = 0;j<matrix[i].length;j++) {
+				System.out.print(matrix[i][j]+"	");
+			}
+			System.out.println();
+		}
+		System.out.println("\n==============================================\n");
+	}
+	
 	void setUp() {
 		mooreMachine = new MooreMachine("A");
 		mooreMachine.addState("A", "0");

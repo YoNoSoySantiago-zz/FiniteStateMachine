@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import model.MealyMachine.State;
-import model.MealyMachine.Transition;
-
 public class MooreMachine {
 	
 	private String firstState;
@@ -18,28 +15,26 @@ public class MooreMachine {
 		firstState = first;
 		allStates = new ArrayList<>();
 		inputAlphabet = new ArrayList<>();
-		inputAlphabet.add("0");
-		inputAlphabet.add("1");
 		outputAlphabet = new ArrayList<>();
-		outputAlphabet.add("0");
-		outputAlphabet.add("1");
 	}
 	
 	/**
-	 * <h2>addState
-	 * <p>This method adds a new state to the state machine.
+	 * addState
+	 * <b>This method adds a new state to the state machine.
 	 * @param name : is the name or identifier to be assigned to the state.
 	 * @param output : is the output or result of the state.
 	 */
 	public void addState(String name, String output) {
 		State newState = new State(name,output);
-		
 		allStates.add(newState);
+		if(!outputAlphabet.contains(output)) {
+			outputAlphabet.add(output);
+		}
 	}
 	
 	/**
-	 * <h2>addTransition
-	 * <p> this method adds a new transition between two states.
+	 * addTransition
+	 * <b> this method adds a new transition between two states.
 	 * @param name : is a symbol of the alphabet included in this Moore machine.
 	 * @param source : is the source state in the transition.
 	 * @param target :  is the target state in the transition.
@@ -49,11 +44,14 @@ public class MooreMachine {
 		State state = findState(source);
 		Transition transition = new Transition(value,target);
 		state.listTransition.add(transition);
+		if(!inputAlphabet.contains(value)) {
+			inputAlphabet.add(value);
+		}
 	}
 	
 	/**
-	 *<h2>generateConnectedGraph
-	 *<p>this method converts the automaton into an equivalent related automaton, 
+	 *generateConnectedGraph
+	 *<b>this method converts the automaton into an equivalent related automaton, 
 	 *deleting all the states that are not accessible from the initial state.
 	 */
 	private void generateConnectedGraph() {
@@ -75,16 +73,18 @@ public class MooreMachine {
 			}
 		}
 		
-		for(State state : allStates) {
-			if(!visited.contains(state)) {
-				allStates.remove(state);
+		ArrayList<State> toRemove = new ArrayList<>();
+		for(int i = 0; i<allStates.size();i++) {
+			if(!visited.contains(allStates.get(i))) {
+				toRemove.add(allStates.get(i));
 			}
 		}
+		allStates.removeAll(toRemove);
 	}
 	
 	/**
-	 * <h2>genereteFirstPartition
-	 * <p>This method generates an initial partition of all states. 
+	 * genereteFirstPartition
+	 * <b>This method generates an initial partition of all states. 
 	 * Grouping the states that produce identical outputs for each input symbol.
 	 * @return return a  matrix where each row is a group of states's name.
 	 */
@@ -105,8 +105,8 @@ public class MooreMachine {
 	}
 	
 	/**
-	 * <h2>generateNextPartition
-	 * <p>This method generate the next partition using a existing partition,
+	 * generateNextPartition
+	 * <b>This method generate the next partition using a existing partition,
 	 * to generate the new partition this method check the states that are in the same block,
 	 * and look for their successors and check if the 's' successor of an state is in the same block of the 's' successor of the other state.
 	 * these for all symbol of the Machine, and if is true the states will be in the same group.
@@ -171,9 +171,29 @@ public class MooreMachine {
 		return result;
 	}
 	
+	public String[][] generateMatrix(){	
+		String[][] matrixResult = new String[allStates.size()+1][inputAlphabet.size()+2];
+		for(int i = 0; i<inputAlphabet.size();i++) {
+			matrixResult[0][i+1] = inputAlphabet.get(i);
+		}
+		for(int i = 1; i<=allStates.size();i++) {
+			State state = allStates.get(i-1);
+			matrixResult[i][0]= state.name;
+			for(int j = 0; j<inputAlphabet.size();j++) {
+				State nextState = findNextState(state, inputAlphabet.get(j));
+				if(nextState!=null) {
+					String toSave = nextState.name;
+					matrixResult[i][j+1] = toSave;
+				}
+			}
+			matrixResult[i][matrixResult[i].length-1]= state.output;
+		}
+		return matrixResult;
+	}
+	
 	/**
-	 * <h2>renamePartition
-	 * <p>using a partition generated, this method assigns a new name to each group of the partition.
+	 * renamePartition
+	 * <b>using a partition generated, this method assigns a new name to each group of the partition.
 	 * and create a Moore machine using the names o states generated and with the transitions of the original states of any state of the group.
 	 * @param lastPartition : is the minimum partition generated.
 	 * @return this method return a Moore machine with the new states and being the minimum automata equivalent.
@@ -204,8 +224,8 @@ public class MooreMachine {
 	}
 	
 	/**
-	 * <h2>generateAutomateEquivalent
-	 * <p> this method generate the minimum equivalent automata using the others methods
+	 * generateAutomateEquivalent
+	 * <b> this method generate the minimum equivalent automata using the others methods
 	 * @return return a Moore machine with the new states and being the minimum automata equivalent.
 	 */
 	public MooreMachine generateAutomataEquivalent() {
@@ -216,8 +236,8 @@ public class MooreMachine {
 	}
 	
 	/**
-	 * <h2>findNextState
-	 * <p>this method find the destination state of the a transition using the source state and the symbol of the transition
+	 * findNextState
+	 * <b>this method find the destination state of the a transition using the source state and the symbol of the transition
 	 * @param source : is the source state
 	 * @param Transition : is the symbol of the transition
 	 * @return this method return the destination state.
@@ -235,8 +255,8 @@ public class MooreMachine {
 	}
 	
 	/**
-	 * <h2>findState
-	 * <p>this method is use to find the state using his name.
+	 * findState
+	 * <b>this method is use to find the state using his name.
 	 * @param nameState : is the name of the state.
 	 * @return the state sought.
 	 */
@@ -250,22 +270,10 @@ public class MooreMachine {
 		}
 		return returnState;
 	}
-//	/**
-//	 * <h2>valueOfState
-//	 * <p>this method find the output of the a state.
-//	 * @param source : is the source state.
-//	 * @return this method return the output of the state.
-//	 */
-//	private String valueOfState(String state) {
-//		return findState(state).output;
-//	}
+	
 	@Override
 	public String toString() {
 		String result = "";
-//		for(String input : inputAlphabet) {
-//			result+=input+"		";
-//		}
-//		result+="\n";
 		for(State state : allStates) {
 			result+=state.name + "	";
 			ArrayList<Transition> transitions = state.listTransition;
