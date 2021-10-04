@@ -18,7 +18,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -49,7 +48,12 @@ public class MachineController {
 	boolean isMealy;
 	GridPane matrix = new GridPane();
 	private Controller c;
-	
+	/**
+	 * MachineController
+	 * <b>This method initialize the controller of the GUI
+	 * @param S : is stage of the controller
+	 * 
+	 */
 	public MachineController(Stage s) throws IOException {
       stage=s;
       firstState = 'A';
@@ -70,7 +74,11 @@ public class MachineController {
 		});
 
 	}
-	
+	/**
+	 * loadSelectionPane
+	 * <b>This method load the pane of the selection automata machine
+	 * 
+	 */
 	public void loadSelectionPane(){
 		FXMLLoader fxmload = new FXMLLoader(getClass().getResource("SelectionPane.fxml"));
 		fxmload.setController(this);
@@ -84,7 +92,11 @@ public class MachineController {
 		}
 	}
 	
-
+	/**
+	 * loadMorePane
+	 * <b>This method load the pane of the moore automata machine
+	 * 
+	 */
 	@SuppressWarnings("unchecked")
 	public void loadMoorePane(){
 		FXMLLoader fxmload = new FXMLLoader(getClass().getResource("MoorePane.fxml"));
@@ -104,13 +116,22 @@ public class MachineController {
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 *  selectMoore
+	 * <b>This method confirm the automata that was choose
+	 * 
+	 */
 	@FXML
     void selectMoore(ActionEvent event) {
 		loadMoorePane();
 		
     }
 	
+	/**
+	 * comboBoxesElection
+	 * <b>This method update the information about the new states
+	 * 
+	 */
     @SuppressWarnings("unchecked")
 	void comboBoxesElection() {
     	char antecesor0 = ' ';
@@ -148,6 +169,11 @@ public class MachineController {
 		}
     	
     }
+	/**
+	 * addStateMoore
+	 * <b>This method add a new state in the automata moore
+	 * 
+	 */
     @FXML
     void addStateMoore(ActionEvent event) {
     	if (firstState < 90) {
@@ -172,13 +198,22 @@ public class MachineController {
 			comboBoxesElection() ;
 		}
     }
-
+    /**
+   	 * completeMachineMoore
+   	 * <b>This method is for validate the equivalent moore machine
+   	 * 
+   	 */
     @FXML
     void completeMachine(ActionEvent event) {
     	createMatrixMoore();
     	matrixMooreFinal=c.genereteMimimumMooreMachine(matrixMoore);
     	loadSolution();
     }
+    /**
+   	 * loadMealyPane
+   	 * <b>This method create a matrix of a moore automata
+   	 * 
+   	 */
     @SuppressWarnings("unchecked")
     public void createMatrixMoore() {
     	matrixMoore = new String[vboxMoore.getChildren().size()][((HBox) vboxMoore.getChildren().get(0)).getChildren().size()-1];
@@ -206,6 +241,11 @@ public class MachineController {
 
     	}
     }
+    /**
+	 * loadMealyPane
+	 * <b>This method load the pane of the mealy automata machine
+	 * 
+	 */
     @SuppressWarnings("unchecked")
 	public void loadMealyPane(){
 		FXMLLoader fxmload = new FXMLLoader(getClass().getResource("MealyPane.fxml"));
@@ -222,11 +262,20 @@ public class MachineController {
 			e.printStackTrace();
 		}
 	}
+    /**
+	 *  selectMealy
+	 * <b>This method confirm the automata that was choose
+	 * 
+	 */
     @FXML
     void selectMealy(ActionEvent event) {
     	loadMealyPane();
     }
-    
+    /**
+	 * addStateMealy
+	 * <b>This method add a new state in the automata moore
+	 * 
+	 */
     @FXML
     void addStateMealy(ActionEvent event) {
     	if (firstState < 90) {
@@ -251,6 +300,11 @@ public class MachineController {
 			vboxMoore.getChildren().add(newHBox);
 		}
     }
+    /**
+   	 * loadMealyPane
+   	 * <b>This method create a matrix of a mealy automata
+   	 * 
+   	 */
     @SuppressWarnings("unchecked")
 	public void createMatrixMealy() {
     	String cadena="";
@@ -267,15 +321,30 @@ public class MachineController {
 		for(int s=1;s<matrixMealy.length;s++) {
 			matrixMealy[s][0]=states.get(cont);
 			cont++;
-		}
+		} 
     }
+    /**
+   	 * completeMachineMealy
+   	 * <b>This method is for validate the equivalent mealy machine
+   	 * 
+   	 */
     @FXML
     void completeMachineMealy(ActionEvent event) {
     	createMatrixMealy();
     	matrixMealyFinal=c.genereteMimimumMealyMachine(matrixMealy);
+    	for(int i = 0; i < matrixMealyFinal.length; i++){ 
+			for(int j = 0; j < matrixMealyFinal[i].length; j++){ 
+				System.out.print(matrixMealyFinal[i][j] + " ");	
+			} 
+			System.out.println();	
+		}
     	loadSolution();
     }
-
+    /**
+   	 * loadSolution
+   	 * <b>This method load the pane of the solution page
+   	 * 
+   	 */
     public void loadSolution(){
 		FXMLLoader fxmload = new FXMLLoader(getClass().getResource("Solution.fxml"));
 		fxmload.setController(this);
@@ -298,9 +367,13 @@ public class MachineController {
     		loadTable(matrixMooreFinal);
     	}
     }
+    /**
+   	 * loadSolution
+   	 * <b>This method load the pane of the solution page
+   	 * @param String [][] an array of strings that have the equivalent information machine
+   	 */
     public void loadTable(String [][] m) {
     	solutionPane.setCenter(matrix);
-    	System.out.println(matrix);
     	for (int i = 0;  i< m.length ; i++) {
     		for (int j = 0; j < m[i].length; j++) {
     			Label label = new Label(m[i][j]);
@@ -309,6 +382,5 @@ public class MachineController {
     	    	matrix.setVgap(10);
     		}
     	}
-    	System.out.println(matrix);
     }
 }

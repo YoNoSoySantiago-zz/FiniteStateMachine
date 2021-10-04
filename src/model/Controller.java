@@ -7,7 +7,7 @@ public class Controller {
 		MooreMachine mooreMachine = new MooreMachine(graphEntry[1][0]);
 		//First add States
 		for(int i = 1;i<graphEntry.length;i++) {
-			mooreMachine.addState(graphEntry[i][0], graphEntry[i][graphEntry[i].length]);
+			mooreMachine.addState(graphEntry[i][0], graphEntry[i][graphEntry[i].length-1]);
 		}
 		
 		//Second add transition
@@ -19,7 +19,7 @@ public class Controller {
 				mooreMachine.addTransition(source, target, value);
 			}
 		}
-		return mooreMachine.generateMatrix();
+		return mooreMachine.generateAutomataEquivalent().generateMatrix();
 	}
 	
 	public String[][] genereteMimimumMealyMachine(String[][] graphEntry){
@@ -40,6 +40,7 @@ public class Controller {
 				mealyMachine.addTransition(source, value, target, output);
 			}
 		}
-		return mealyMachine.generateMatrix();
+		
+		return mealyMachine.generateAutomataEquivalent().generateMatrix();
 	}
 }

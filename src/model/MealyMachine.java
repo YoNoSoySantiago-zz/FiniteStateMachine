@@ -59,12 +59,15 @@ public class MealyMachine {
 		visited.add(firstState);
 		while(!queue.isEmpty()) {
 			State currentState = queue.poll();
-			ArrayList<Transition> transitions = currentState.listTransition;
-			for(Transition transition : transitions) {
-				State transitionState = findState(transition.target);
-				if(!visited.contains(transitionState)) {
-					queue.add(transitionState);
-					visited.add(transitionState);
+			if(currentState!=null) {
+				ArrayList<Transition> transitions = currentState.listTransition;
+
+				for(Transition transition : transitions) {
+					State transitionState = findState(transition.target);
+					if(!visited.contains(transitionState)) {
+						queue.add(transitionState);
+						visited.add(transitionState);
+					}
 				}
 			}
 		}
