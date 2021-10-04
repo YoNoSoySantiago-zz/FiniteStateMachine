@@ -13,7 +13,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -21,6 +21,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import model.Controller;
 
 public class MachineController {
 	@FXML
@@ -40,9 +41,11 @@ public class MachineController {
 	private int cont;
 	private String[][] matrixMoore;
 	private String[][] matrixMealy;
+	private String[][] matrixMooreFinal;
+	private String[][] matrixMealyFinal;
 	boolean isMealy;
 	GridPane matrix = new GridPane();
-
+	private Controller c;
 	
 	public MachineController(Stage s) throws IOException {
       stage=s;
@@ -51,6 +54,7 @@ public class MachineController {
       states=new ArrayList<String>();
       cont=0;
       states.add(firstState+"");
+      c=new Controller();
 		
 	}
 	public void initialize() {
@@ -101,6 +105,7 @@ public class MachineController {
 	@FXML
     void selectMoore(ActionEvent event) {
 		loadMoorePane();
+		
     }
 	
     @SuppressWarnings("unchecked")
@@ -168,6 +173,7 @@ public class MachineController {
     @FXML
     void completeMachine(ActionEvent event) {
     	createMatrixMoore();
+    	matrixMooreFinal=c.genereteMimimumMooreMachine(matrixMoore);
     	loadSolution();
     }
     @SuppressWarnings("unchecked")
@@ -263,6 +269,7 @@ public class MachineController {
     @FXML
     void completeMachineMealy(ActionEvent event) {
     	createMatrixMealy();
+    	matrixMealyFinal=c.genereteMimimumMealyMachine(matrixMealy);
     	loadSolution();
     }
 
@@ -274,9 +281,6 @@ public class MachineController {
 			root = fxmload.load();
 			basePane.getChildren().clear();
 			basePane.setCenter(root);
-			Label label=new Label("HOLA");
-	    	TextField f=new TextField();
-	    	matrix.add(f, 0, 0);
 	
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -285,10 +289,10 @@ public class MachineController {
     @FXML
     void toc(ActionEvent event) {
     	if(isMealy) {
-    		 loadTable(matrixMealy);
+    		 loadTable(matrixMealyFinal);
     	}
     	else {
-    		loadTable(matrixMoore);
+    		loadTable(matrixMooreFinal);
     	}
     }
     public void loadTable(String [][] m) {
