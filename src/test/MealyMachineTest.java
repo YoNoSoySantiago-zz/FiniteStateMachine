@@ -45,9 +45,6 @@ class MealyMachineTest {
 		mealyMachine.addState("D");
 		mealyMachine.addState("E");
 		mealyMachine.addState("F");
-		
-		mealyMachine.addInputSymbol('0');
-		mealyMachine.addInputSymbol('1');
 	}
 	
 	void setUp2() {

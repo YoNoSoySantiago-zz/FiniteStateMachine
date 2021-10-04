@@ -28,10 +28,6 @@ public class MealyMachine {
 		State newState = new State(name);
 		allStates.add(newState);
 	}
-	
-	public void addInputSymbol(Character symbol) {
-		inputAlphabet.add(symbol.toString());
-	}
 	/**
 	 * addTransition
 	 * <b> this method adds a new transition between two states.
@@ -44,6 +40,9 @@ public class MealyMachine {
 		State state = findState(source);
 		Transition transition = new Transition(name,target,output);
 		state.listTransition.add(transition);
+		if(!inputAlphabet.contains(name)) {
+			inputAlphabet.add(name);
+		}
 	}
 	/**
 	 *generateConnectedGraph

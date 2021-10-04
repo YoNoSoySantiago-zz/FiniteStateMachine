@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Iterator;
+
 public class Controller {
 	
 	 
@@ -29,10 +31,15 @@ public class Controller {
 		for(int i = 1;i<graphEntry.length;i++) {
 			mealyMachine.addState(graphEntry[i][0]);
 		}
-		
+		for(int i = 0;i<graphEntry.length;i++) {
+			for(int j =0;j<graphEntry[i].length;j++) {
+				System.out.print(graphEntry[i][j] + "	");
+			}
+			System.out.println();
+		}
 		//Second add Transition
 		for(int i = 1;i<graphEntry.length;i++) {
-			for(int j=1;j<graphEntry[i].length-1;j++) {
+			for(int j=1;j<graphEntry[i].length;j++) {
 				String source = graphEntry[i][0];
 				String target = graphEntry[i][j].split(",")[0].toString();
 				String value = graphEntry[0][j];
@@ -41,6 +48,7 @@ public class Controller {
 			}
 		}
 		
-		return mealyMachine.generateAutomataEquivalent().generateMatrix();
+		MealyMachine otherMealyMachine = mealyMachine.generateAutomataEquivalent();
+		return otherMealyMachine.generateMatrix();
 	}
 }

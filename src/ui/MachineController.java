@@ -377,7 +377,7 @@ public class MachineController {
     	for (int i = 0;  i< m.length ; i++) {
     		for (int j = 0; j < m[i].length; j++) {
     			Label label = new Label(m[i][j]);
-    			matrix.add(label, i, j);
+    			matrix.add(label, j,i);
     			matrix.setHgap(10);
     	    	matrix.setVgap(10);
     		}
