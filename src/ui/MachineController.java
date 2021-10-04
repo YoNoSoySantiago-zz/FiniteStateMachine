@@ -18,6 +18,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -37,6 +38,8 @@ public class MachineController {
 	private BorderPane basePane;
 	@FXML
 	private VBox vboxMoore;
+	@FXML
+    private BorderPane solutionPane;
 	private ArrayList<String> states;
 	private int cont;
 	private String[][] matrixMoore;
@@ -154,7 +157,7 @@ public class MachineController {
 			states.add(letter+"");
 			firstState ++;
 			stateLetter.setPrefWidth(35);
-			ComboBox<Character> ceroSuccesor = new ComboBox<>();
+			ComboBox<Character> ceroSuccesor = new ComboBox<>(); 
 			ComboBox<Character> oneSuccesor = new ComboBox<>();
 			ComboBox<Integer> output = new ComboBox<>();
 			ceroSuccesor.setValue(firstState);
@@ -296,6 +299,8 @@ public class MachineController {
     	}
     }
     public void loadTable(String [][] m) {
+    	solutionPane.setCenter(matrix);
+    	System.out.println(matrix);
     	for (int i = 0;  i< m.length ; i++) {
     		for (int j = 0; j < m[i].length; j++) {
     			Label label = new Label(m[i][j]);
@@ -304,5 +309,6 @@ public class MachineController {
     	    	matrix.setVgap(10);
     		}
     	}
+    	System.out.println(matrix);
     }
 }
